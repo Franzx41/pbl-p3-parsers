@@ -1,0 +1,37 @@
+identifier = {Letter}({Letter}| {Number} | ['_'])*
+<Type>::= <primitive Type> | identifier
+<primitive Type>::= 'integer' | 'float' | 'boolean' | 'string'
+
+================================
+<function>::= 'function' <Type> identifier <parameters> '{' <statements> '}' 
+<parameters>::= '(' <parameter> ')' | '(' ')'
+<parameter>::= <Type> identifier | <Type> identifier ',' <parameter> 
+# === >>> Fatoração (testado no GOLD PARSER) =======
+<function>::= 'function' <Type> identifier <parameters> '{' <statements> '}' 
+<parameters>::= '(' <parameter>
+<parameter> ::= <Type> identifier <parameter_list> | ')'
+<parameter_list> ::= ',' <parameter> |  ')'
+================================
+
+<statements> ::= <variables> <body>
+
+===================================
+<variables>::= 'variables' '{' <expression variables> '}' | 'variables' '{' '}'
+# === >>> Fatoração ==========================
+<variables>::= 'variables' '{' <variables_tail>
+<variables_tail>::= <expression variables> '}' | '}'
+
+===================================
+<expression variables>::= <expression declaration> <expression variables> | <expression declaration>
+# === >>> Fatoração ==========================
+<expression variables>::= <expression declaration> <expression variables_tail>
+<expression variables_tail>::= <expression variables>
+===================================
+<expression declaration>::= <primitive type> identifier ';' | identifier identifier ';' | <primitive type> identifier '=' <value> ';' | <primitive type> <vector position> ';'
+# === >>> Fatoração ==========================
+<expression declaration>::= <primitive type> <expression declaration_tail> | identifier identifier ';' 
+<expression declaration_tail>::= identifier ';' | identifier '=' <value> ';' | <vector position> ';'
+# === === >>> Fatoração ==========================
+<expression declaration_tail>::= identifier <expression declaration_tail2> | <vector position> ';'
+<expression declaration_tail2>::= ';' | '=' <value> ';'
+===================================
