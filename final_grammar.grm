@@ -1,0 +1,102 @@
+"Start Symbol" = <start>
+"Case Sensitive" = True
+
+booleanDeclarate = 'true' | 'false'
+number = {Number}+('.'{Number}+)?
+{Symbol} = {&20 .. &21} + {&23 .. &26} + {&28 .. &7E} 
+stringDeclarate = '"'{Symbol}*'"' 
+character = ['']{Symbol}[''] 
+identifier = {Letter}({Letter}| {Number} | ['_'])*
+
+           
+Comment Start = '/*'
+Comment End   = '*/'
+Comment Line  = '//'
+
+<start> ::= <constants> <variables> <start_tail2> | <registers> <constants> <variables> <start_tail1>
+<registers> ::= <register> <registers_tail1>
+<functions> ::= <function> <functions_tail1>
+<constants> ::= 'constants' '{' <constants_tail1>
+<constants_declarations> ::= <assignment_declaration> <constants_declarations_tail1>
+<assignment_declaration> ::= <primitive_type> identifier '=' <value> ';'
+<value> ::= character | stringDeclarate | <logic_expression>
+<type> ::= <primitive_type> | identifier
+<primitive_type> ::= 'float' | 'integer' | 'boolean' | 'string'
+<variables> ::= 'variables' '{' <variables_tail1>
+<declaration> ::= <type> identifier ';'
+<vector_position> ::= identifier <vector_index>
+<vector_index> ::= '[' <vector_index_tail4>
+<expression_declaration> ::= identifier identifier ';' | <primitive_type> <expression_declaration_tail2>
+<expression_variables> ::= <expression_declaration> <expression_variables_tail1>
+<register> ::= 'register' identifier '{' <register_body> '}'
+<register_body> ::= <declaration> <register_body_tail1>
+<register_position> ::= identifier <register_access>
+<register_access> ::= '.' <register_access_tail2>
+<function> ::= 'function' <type> identifier <parameters> '{' <statements> '}'
+<parameters> ::= '(' <parameters_tail1>
+<parameter> ::= <type> identifier <parameter_tail1>
+<main> ::= 'main' '(' ')' '{' <statements> '}'
+<statements> ::= <variables> <body>
+<body> ::= <assignment> | <commands> <body_tail1>
+<assignment> ::= <attribute> <increment_terminal> ';' | <attribute> '=' <value> ';'
+<attribute> ::= identifier | <vector_position> | <register_position>
+<commands> ::= <read> | <write> | <while> | <function_call> ';' | <if> | <for> | <return>
+<function_call> ::= identifier <argument>
+<argument> ::= '(' <argument_tail1>
+<arguments> ::= <value> <arguments_tail1>
+<return> ::= 'return' <return_tail1>
+<if> ::= <fixed_if> <if_tail1>
+<fixed_if> ::= 'if' '(' <logic_expression> ')' 'then' '{' <body> '}'
+<for> ::= 'for' '(' <initialization> ';' <relational_expression> ';' identifier <increment_terminal> ')' '{' <body> '}'
+<initialization> ::= identifier '=' <arithmetic_expression> | 'integer' identifier '=' <arithmetic_expression>
+<while> ::= 'while' '(' <logic_expression> ')' '{' <body> '}'
+<write> ::= 'write' '(' <write_list> ')' ';'
+<write_list> ::= <value> <write_list_tail1>
+<read> ::= 'read' '(' <read_list> ')' ';'
+<read_list> ::= <attribute> <read_list_tail1>
+<increment_terminal> ::= '++' | '--'
+<logic_expression> ::= '(' <logic_expression> ')' <logic_expression_tail1> | <logic_value> <logic_expression_tail2>
+<logic_value> ::= <relational_expression> | booleanDeclarate
+<logic_terminal> ::=  | '&&' | '
+<relational_expression> ::= <arithmetic_expression> <relational_expression_tail1> | '(' <relational_expression> ')' | '('<relational_expression_tail1> ')' <relational_terminal> <relational_expression>
+<relational_terminal> ::= '>' | '<' | '==' | '>=' | '!=' | '<='
+<arithmetic_expression> ::= <arithmetic_operating> <arithmetic_expression_tail1>
+<arithmetic_sum> ::= '+' <arithmetic_operating> <arithmetic_sum_tail1> | '-' <arithmetic_operating> <arithmetic_sum_tail2>
+<arithmetic_operating> ::= <arithmetic_value> <arithmetic_operating_tail1>
+<arithmetic_multiplication> ::= '/' <arithmetic_value> <arithmetic_multiplication_tail2> | '*' <arithmetic_value> <arithmetic_multiplication_tail1>
+<arithmetic_value> ::= number | '(' <arithmetic_expression> ')' | <attribute> | <function_call>
+<start_tail1> ::= <functions> <main> | <main>
+<start_tail2> ::= <functions> <main> | <main>
+<registers_tail1> ::= <registers>
+<functions_tail1> ::= <functions>
+<constants_tail1> ::= '}' | <constants_declarations> '}'
+<constants_declarations_tail1> ::= <constants_declarations>
+<variables_tail1> ::= '}' | <expression_variables> '}'
+<vector_index_tail1> ::= <vector_index>
+<vector_index_tail2> ::= <vector_index>
+<vector_index_tail3> ::= <vector_index>
+<vector_index_tail4> ::= <arithmetic_expression_tail1> ']' <vector_index_tail3> | identifier ']' <vector_index_tail2> | number ']' <vector_index_tail1>
+<expression_declaration_tail1> ::= '=' <value> ';' | ';'
+<expression_declaration_tail2> ::= identifier <expression_declaration_tail1> | <vector_position> ';'
+<expression_variables_tail1> ::= <expression_variables>
+<register_body_tail1> ::= <register_body>
+<register_access_tail1> ::= <register_access>
+<register_access_tail2> ::= <vector_position> | identifier <register_access_tail1>
+<parameters_tail1> ::= ')' | <parameter> ')'
+<parameter_tail1> ::= ',' <parameter>
+<body_tail1> ::= <assignment> <body> | <body>
+<argument_tail1> ::= <arguments> ')' | ')'
+<arguments_tail1> ::= ',' <arguments>
+<return_tail1> ::= <value> ';' | ';'
+<if_tail1> ::= 'else' '{' <body> '}'
+<write_list_tail1> ::= ',' <write_list>
+<read_list_tail1> ::= ',' <read_list>
+<logic_expression_tail1> ::= <logic_terminal> <logic_expression>
+<logic_expression_tail2> ::= <logic_terminal> <logic_expression>
+<relational_expression_tail1> ::= <relational_terminal> <relational_expression>
+<arithmetic_expression_tail1> ::= <arithmetic_sum>
+<arithmetic_sum_tail1> ::= <arithmetic_sum>
+<arithmetic_sum_tail2> ::= <arithmetic_sum>
+<arithmetic_operating_tail1> ::= <arithmetic_multiplication>
+<arithmetic_multiplication_tail1> ::= <arithmetic_multiplication>
+<arithmetic_multiplication_tail2> ::= <arithmetic_multiplication>
